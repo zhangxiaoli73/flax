@@ -208,6 +208,18 @@ def create_split(
   Returns:
     A `tf.data.Dataset`.
   """
+
+  def generate_data(_):
+      image = tf.zeros([224, 224, 3],dtype=dtype)
+      label = tf.zeros([1], dtype=tf.int32)
+      return image, label
+
+  dataset = tf.data.Dataset.range(1)
+  dataset = dataset.repeat()
+  dataset = dataset.map(
+      generate_data, num_parallel_calls=tf.data.experimental.AUTOTUNE)
+  return dataset
+
   if train:
     train_examples = dataset_builder.info.splits['train'].num_examples
     split_size = train_examples // jax.process_count()

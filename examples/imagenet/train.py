@@ -306,6 +306,7 @@ def train_and_evaluate(
   else:
     input_dtype = tf.float32
 
+  print("zl_debug dataset path: ", config.dataset)
   dataset_builder = tfds.builder(config.dataset)
   train_iter = create_input_iter(
       dataset_builder,
@@ -317,34 +318,39 @@ def train_and_evaluate(
       shuffle_buffer_size=config.shuffle_buffer_size,
       prefetch=config.prefetch,
   )
-  eval_iter = create_input_iter(
-      dataset_builder,
-      local_batch_size,
-      image_size,
-      input_dtype,
-      train=False,
-      cache=config.cache,
-      shuffle_buffer_size=None,
-      prefetch=config.prefetch,
-  )
-
-  steps_per_epoch = (
-      dataset_builder.info.splits['train'].num_examples // config.batch_size
-  )
+  # eval_iter = create_input_iter(
+  #     dataset_builder,
+  #     local_batch_size,
+  #     image_size,
+  #     input_dtype,
+  #     train=False,
+  #     cache=config.cache,
+  #     shuffle_buffer_size=None,
+  #     prefetch=config.prefetch,
+  # )
+  #
+  # steps_per_epoch = (
+  #     dataset_builder.info.splits['train'].num_examples // config.batch_size
+  # )
+  #
+  image_size: int = 224
+  num_examples: int = 1281167
+  steps_per_epoch = num_examples // config.batch_size
 
   if config.num_train_steps <= 0:
     num_steps = int(steps_per_epoch * config.num_epochs)
   else:
     num_steps = config.num_train_steps
 
-  if config.steps_per_eval == -1:
-    num_validation_examples = dataset_builder.info.splits[
-        'validation'
-    ].num_examples
-    steps_per_eval = num_validation_examples // config.batch_size
-  else:
-    steps_per_eval = config.steps_per_eval
+  # if config.steps_per_eval == -1:
+  #   num_validation_examples = dataset_builder.info.splits[
+  #       'validation'
+  #   ].num_examples
+  #   steps_per_eval = num_validation_examples // config.batch_size
+  # else:
+  #   steps_per_eval = config.steps_per_eval
 
+  steps_per_eval = config.steps_per_eval
   steps_per_checkpoint = steps_per_epoch * 10
 
   base_learning_rate = config.learning_rate * config.batch_size / 256.0
@@ -406,11 +412,11 @@ def train_and_evaluate(
 
       # sync batch statistics across replicas
       state = sync_batch_stats(state)
-      for _ in range(steps_per_eval):
-        eval_batch = next(eval_iter)
-        metrics = p_eval_step(state, eval_batch)
-        eval_metrics.append(metrics)
-      eval_metrics = common_utils.get_metrics(eval_metrics)
+      # for _ in range(steps_per_eval):
+      #   eval_batch = next(eval_iter)
+      #   metrics = p_eval_step(state, eval_batch)
+      #   eval_metrics.append(metrics)
+      # eval_metrics = common_utils.get_metrics(eval_metrics)
       summary = jax.tree_util.tree_map(lambda x: x.mean(), eval_metrics)
       logging.info(
           'eval epoch: %d, loss: %.4f, accuracy: %.2f',

@@ -209,10 +209,10 @@ def create_split(
     A `tf.data.Dataset`.
   """
   if train:
-    train_examples = dataset_builder.info.splits['train'].num_examples
+    train_examples = dataset_builder.info.splits['validation'].num_examples
     split_size = train_examples // jax.process_count()
     start = jax.process_index() * split_size
-    split = f'train[{start}:{start + split_size}]'
+    split = f'validation[{start}:{start + split_size}]'
   else:
     validate_examples = dataset_builder.info.splits['validation'].num_examples
     split_size = validate_examples // jax.process_count()

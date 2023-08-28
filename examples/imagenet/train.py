@@ -305,8 +305,14 @@ def train_and_evaluate(
       input_dtype = tf.float16
   else:
     input_dtype = tf.float32
+  
+  print("zl_debug config.dataset")
+  #print("zl_debug tfds path ", tfds.core.tfds.path())
 
-  dataset_builder = tfds.builder(config.dataset)
+  dataset_builder = tfds.builder(config.dataset, data_dir="/home/sdp/cherry/tensorflow_datasets")
+  #dataset_builder.download_and_prepare()
+  print("zl_debug builder info ", dataset_builder.info)
+  print("zl_debug download finished")
   train_iter = create_input_iter(
       dataset_builder,
       local_batch_size,
@@ -329,7 +335,7 @@ def train_and_evaluate(
   )
 
   steps_per_epoch = (
-      dataset_builder.info.splits['train'].num_examples // config.batch_size
+      dataset_builder.info.splits['validation'].num_examples // config.batch_size
   )
 
   if config.num_train_steps <= 0:

@@ -47,7 +47,7 @@ def get_config():
   config.prefetch = 10
 
   config.num_epochs = 100.0
-  config.log_every_steps = 100
+  config.log_every_steps = 1
 
   config.cache = False
   config.half_precision = False

@@ -60,7 +60,8 @@ def main(argv):
   platform.work_unit().create_artifact(
       platform.ArtifactType.DIRECTORY, FLAGS.workdir, 'workdir'
   )
-
+  print("zl_debug model config ", FLAGS.config)
+  print("zl_debug model workdir ", FLAGS.workdir)
   train.train_and_evaluate(FLAGS.config, FLAGS.workdir)
 
 

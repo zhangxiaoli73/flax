@@ -50,10 +50,7 @@ NUM_CLASSES = 1000
 def create_model(*, model_cls, half_precision, **kwargs):
   platform = jax.local_devices()[0].platform
   if half_precision:
-    if platform == 'tpu':
       model_dtype = jnp.bfloat16
-    else:
-      model_dtype = jnp.float16
   else:
     model_dtype = jnp.float32
   return model_cls(num_classes=NUM_CLASSES, dtype=model_dtype, **kwargs)
@@ -250,7 +247,7 @@ def create_train_state(
   """Create initial training state."""
   dynamic_scale = None
   platform = jax.local_devices()[0].platform
-  if config.half_precision and platform == 'gpu':
+  if config.half_precision and platform == 'xpu':
     dynamic_scale = dynamic_scale_lib.DynamicScale()
   else:
     dynamic_scale = None
@@ -299,10 +296,7 @@ def train_and_evaluate(
   platform = jax.local_devices()[0].platform
 
   if config.half_precision:
-    if platform == 'tpu':
       input_dtype = tf.bfloat16
-    else:
-      input_dtype = tf.float16
   else:
     input_dtype = tf.float32
   

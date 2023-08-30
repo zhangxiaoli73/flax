@@ -393,8 +393,10 @@ def train_and_evaluate(
                 lambda x: x.mean(), train_metrics
             ).items()
         }
+        train_metrics_first_t = time.time()
+        time.sleep(2)
         summary['steps_per_second'] = config.log_every_steps / (
-            time.time() - train_metrics_last_t
+            train_metrics_first_t - train_metrics_last_t
         )
         writer.write_scalars(step + 1, summary)
         train_metrics = []
